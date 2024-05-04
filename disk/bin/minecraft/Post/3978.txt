@@ -1,0 +1,328 @@
+该教程是不是Cleanroom的官方教程，如确有需求请至Discord或非官方群咨询！
+
+该教程是Hileb的经验教程，未必具有准确性和普适性。
+
+[mark:title_menu]
+
+[h1=配置环境]
+
+[h2=下载Java]
+
+
+
+截至至3029，Cleanroom开发要求 Java 21。
+
+从oracle下载（需要oracle账户）：Java Downloads | Oracle 中国
+
+
+
+（自行操作）：OpenJDK: Download and install
+
+Amazon Corretto ：Downloads for Amazon Corretto 21 - Amazon Corretto 21
+
+
+
+[h2=配置MDK]
+
+截至至3029，Cleanroom还没有官方的mdk。
+
+你可以下载kappa提供的1.12.2-FG6-Template
+
+Hileb基于IdeallandFramework，TemplateDevEnv，1.12.2-FG6-Template编写的CleanroomIDF
+
+
+
+[h3=升级MDK]
+
+如果你已经使用模板，则跳过该步骤。
+
+
+
+[h4=升级Gradle]
+
+升级到gradle 8.6。
+
+gradle/wrapper/gradle-wrapper.properties
+
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-bin.zip
+可用的镜像：
+
+腾讯云 https\://mirrors.cloud.tencent.com/gradle/gradle-8.6-bin.zip
+
+Lss233 https\://lss233.littleservice.cn/repositories/gradle-dist/gradle-8.6-bin.zip
+
+
+
+[h4=升级ForgeGradle]
+
+ buildscript {
+     repositories {
+         maven { url = 'https://maven.minecraftforge.net' }
++        maven { url = 'https://maven.outlands.top/releases' }
++        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
+         mavenCentral()
+         gradlePluginPortal()
+    }
+    dependencies {
+-      classpath "net.minecraftforge.gradle:ForgeGradle:2.3.4"
++      classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.10.+', changing: true
++      classpath "org.spongepowered:mixingradle:0.7.+"
+    }
+}
+
+
+[h5=升级Java]
+
+- sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
+- compileJava {
+-    sourceCompatibility = targetCompatibility = "1.8"
+-  }
++ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+
+[h5=AT现在需要你自己来]
+
+   minecraft {
++      accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+
+[h5=混淆映射表的配置方式更改]
+
+   minecraft {
+-      mappings = "snapshot_20171003"
++      mappings channel: "stable", version: "39-1.12"
+
+
+[h5=运行的更改]
+
+minecraft {
++   runs {
++      client {
+-   runDir = "run"
++          workingDirectory project.file('run/client')
+-          clientJvmArgs += "-Dfml.coreMods.load=com.example.ExamplePlugin"         
++          jvmArgs.add("-Dfml.coreMods.load=com.example.ExamplePlugin" )
++          property 'forge.logging.console.level', 'debug'
++          mods {                "${project.mod_id}" {                    source sourceSets.main                }            }
+    }
+   }
+
+
+[h5=修改Plugin]
+
+- apply plugin: "net.minecraftforge.gradle.forge"
++ apply plugin: 'net.minecraftforge.gradle'
++ apply plugin: 'eclipse'
++ apply plugin: 'maven-publish'
++ apply plugin: 'java'
++ apply plugin: 'org.spongepowered.mixin'
+
+
+[h5=Legacy]
+
+minecraft{
++ legacy {
++   fixClasspath = true
++   extractMappings = true
++   attachMappings = true
++ }
+}
+
+
+[h5=资源处理]
+
+- processResources {
+-     // this will ensure that this task is redone when the versions change.
+-     inputs.property "version", project.version
+-     inputs.property "mcversion", project.minecraft.version
+- 
+-     // replace stuff in mcmod.info, nothing else
+-     from(sourceSets.main.resources.srcDirs) {
+-         include "mcmod.info"
+- 
+-         // replace version and mcversion
+-         expand "version":project.version, "mcversion":project.minecraft.version
+-     }
+- 
+-     // copy everything else except the mcmod.info
+-     from(sourceSets.main.resources.srcDirs) {
+-         exclude "mcmod.info"
+-     }
+- } 
+- //这里移除的processResources 稍后会重新实现
+
++ sourceSets {
++     main {
++         resources {
++             srcDir 'src/generated/resources'
++         }
++     }
++ }
+
+
+[h5=最后]
+
+dependencies {
+- defboCompile
++ implementation fg.deobf(
+}
+
++ jar.finalizedBy('reobfJar')
+processResource可用使用blossom代替（Fugue）:
+
+  buildscript {
+      repositories {
++        maven { url = 'https://maven.outlands.top/releases' }
+      }
+      dependencies {
++       classpath "net.kyori:blossom:2.1.0"
+      }
+  }
++apply plugin: 'net.kyori.blossom'
+  sourceSets {
+      main {
+          resources {
+              srcDir 'src/generated/resources'
+          }
++        blossom {
++             resources {
++                 property("mod_id", mod_id)
++                 property("mod_name", mod_name)
++                 property("mod_description", mod_description)
++                 property("mod_version", mod_version)
++                 property("mod_authors", mod_authors)
++             }
++             javaSources {
++                property("MODNAME", mod_name)
++                property("MODID", mod_id)
++                property("VERSION", version)
++             }
++         }
+      }
+  }
+这种情况下，{{ KEY }} 会被替换为内容，
+
+例如
+
+mod_id = example
+
+{{ mod_id }} -> example
+
+
+
+也可用processResources
+
+minecraft {
++ copyIdeResources = true
+}
++ tasks.named('processResources', ProcessResources).configure {
++     def filterList = ['mcmod.info', 'pack.mcmeta']
++         filterList.addAll(propertyStringList('mixin_configs').collect(config -> "mixins.${config}.json" as String))
++             var replaceProperties = [
++                         mod_id: propertyString('mod_id'),
++                         mod_name: propertyString('mod_name'),
++                         mod_version: propertyString('mod_version'),
++                         mod_description: propertyString('mod_description'),
++                         mod_authors: "[${propertyStringList('mod_authors', ',').join(', ')}]",
++                         mod_credits: propertyString('mod_credits'),
++                         mod_url: propertyString('mod_url'),
++                         mod_update_json: propertyString('mod_update_json'),
++                         mod_logo_path: propertyString('mod_logo_path'),
++                         mixin_refmap: propertyString('mixin_refmap'),
++                         mixin_package: propertyString('mixin_package')    
++                   ]   
++           inputs.properties replaceProperties    filesMatching(filterList) {
++                  expand replaceProperties + [project: project]    
++           }
++  }
+甚至
+
+tasks.named('processResources', ProcessResources).configure {
+   def filterList = ['mcmod.info', 'pack.mcmeta']
+   filterList.addAll(propertyStringList('mixin_configs').collect(config -> "mixins.${config}.json" as String))
+   filesMatching(filterList) {
+           expand project.properties
+   }
+}
+此时 ${KEY} 会被替换为 gradle.properties 内对应内容。
+
+
+
+[h1=升级MOD]
+
+Mod现在在新的环境运行，你需要升级你的Mod适应新的环境。
+
+这些内容在官网中有介绍 Introduction | CleanroomMC。
+
+请先阅读官方文档！
+
+[h3=Java 的变化]
+
+
+
+[h4=URLClassLoader]
+
+Cleanroom 的 URLClassLoaderTransformer，可以检查这类行为（强转后立即调用getURLs，例如`((URLClassLoader) Launch.classLoader.getClass().getClassLoader()).getURLs()`），并替换为Cleanroom的getURL方法。
+
+
+
+[h4=ScriptEngineManager]
+
+Cleanroom 的 ScriptEngineTransformer 将 `ScriptEngineManager` 的创建重新映射为 `CleanroomScriptEngineManager`。
+
+
+
+[h4=无效的 UUID]
+
+Cleanroom 的 MalformedUUIDTransformer 将 `UUID.fromString` 替换为 `UUIDFix.fromString` 以修复无效的UUID。被修复的非法UUID也会在log中体现。
+
+FMLLog.log.error("UUID [{}] is being processed with the approach from Java 8 for compatibility's sake. This UUID is malformed!", uuid);
+
+
+[h4=ASM API 版本]
+
+你应该将其至少更新到 ASM9 才能处理大多类（部分类可能依然是Java8的）。
+
+
+
+[h4=适应运行库更新]
+
+
+
+[h5=ICU4J]
+
+Cleanroom 使用 ICU4J 的上游版本作为工作换行引擎，模组也应该使用`com.cleanroommc.client.BreakIteratorHolder#BREAK_ITERATOR`以获得更好的国际化。
+
+
+
+[h1=Forge的变化]
+
+基于Java 21，你可以使用Java 21新特性。
+
+
+
+[h2=Minecraft]
+
+Realms 被移除，你不应该引用 Realms。
+
+全键无冲功能被内置，模组内无需再有此类功能。
+
+换行修复功能被内置，模组内无需再有此类功能，可以直接复用。
+
+HorseFallFix功能被内置，如果你的模组对此有特殊处理，需要移除。
+
+强制ASCII字体功能被内置。
+
+可以在任何时候更换窗口标题。
+
+
+
+[h2=Mixins]
+
+MixinBooter被内置，但未来会有更好的Mixin API。
+
+
+
+[h2=Config]
+
+ConfigAnytime被内置，但未来会有更好的Config API。
