@@ -262,19 +262,19 @@ Mod现在在新的环境运行，你需要升级你的Mod适应新的环境。
 
 [h4=URLClassLoader]
 
-Cleanroom 的 URLClassLoaderTransformer，可以检查这类行为（强转后立即调用getURLs，例如`((URLClassLoader) Launch.classLoader.getClass().getClassLoader()).getURLs()`），并替换为Cleanroom的getURL方法。
+Cleanroom 的 URLClassLoaderTransformer，可以检查这类行为（强转后立即调用getURLs，例如"((URLClassLoader) Launch.classLoader.getClass().getClassLoader()).getURLs()），并替换为Cleanroom的getURL方法。
 
 
 
 [h4=ScriptEngineManager]
 
-Cleanroom 的 ScriptEngineTransformer 将 `ScriptEngineManager` 的创建重新映射为 `CleanroomScriptEngineManager`。
+Cleanroom 的 ScriptEngineTransformer 将 "ScriptEngineManager" 的创建重新映射为 "CleanroomScriptEngineManager"。
 
 
 
 [h4=无效的 UUID]
 
-Cleanroom 的 MalformedUUIDTransformer 将 `UUID.fromString` 替换为 `UUIDFix.fromString` 以修复无效的UUID。被修复的非法UUID也会在log中体现。
+Cleanroom 的 MalformedUUIDTransformer 将 "UUID.fromString" 替换为 "UUIDFix.fromString" 以修复无效的UUID。被修复的非法UUID也会在log中体现。
 
 FMLLog.log.error("UUID [{}] is being processed with the approach from Java 8 for compatibility's sake. This UUID is malformed!", uuid);
 
@@ -291,7 +291,7 @@ FMLLog.log.error("UUID [{}] is being processed with the approach from Java 8 for
 
 [h5=ICU4J]
 
-Cleanroom 使用 ICU4J 的上游版本作为工作换行引擎，模组也应该使用`com.cleanroommc.client.BreakIteratorHolder#BREAK_ITERATOR`以获得更好的国际化。
+Cleanroom 使用 ICU4J 的上游版本作为工作换行引擎，模组也应该使用 "com.cleanroommc.client.BreakIteratorHolder#BREAK_ITERATOR" 以获得更好的国际化。
 
 
 
