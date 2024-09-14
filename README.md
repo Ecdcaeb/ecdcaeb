@@ -13,8 +13,20 @@ Here are some ideas to get you started:
 - 📫 How to reach me: ...
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
+- ⚡ Total Accesses: [![Hileb](https://count.getloli.com/get/@ecdcaeb?theme=gelbooru)](https://github.com/LoliKingdom)
 -->
 
-[![Anurag's github stats](https://github-readme-stats.vercel.app/api?username=ecdcaeb&show_icons=true&theme=prussian)](https://github.com/anuraghazra/github-readme-stats)
+
+<a href="https://github.com/anuraghazra/github-readme-stats"><img align="center" src="https://github-readme-stats.vercel.app/api?username=ecdcaeb&show_icons=true&include_all_commits=true&theme=buefy&hide_border=true" alt="Hileb's github stats" /></a> | <a href="https://github.com/anuraghazra/github-readme-stats"><img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ecdcaeb&layout=compact&theme=buefy&hide_border=true" /></a> |
+| ------------- | ------------- |
+
 
 [![Hileb](https://count.getloli.com/get/@ecdcaeb?theme=gelbooru)](https://github.com/LoliKingdom)
+
+
+#### Maintain Repositories
+
+
+<a href="https://github.com/Ecdcaeb/ResourceModLoader">
+  <img align="center" src="https://github-readme-stats.vercel.app/api/pin/?username=ecdcaeb&repo=ResourceModLoader&theme=buefy" />
+</a>
