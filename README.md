@@ -30,3 +30,13 @@ Here are some ideas to get you started:
 <a href="https://github.com/Ecdcaeb/ResourceModLoader">
   <img align="center" src="https://github-readme-stats.vercel.app/api/pin/?username=ecdcaeb&repo=ResourceModLoader&theme=buefy" />
 </a>
+
+
+<a href="https://github.com/Ecdcaeb/CleanroomIDF">
+  <img align="center" src="https://github-readme-stats.vercel.app/api/pin/?username=ecdcaeb&repo=CleanroomIDF&theme=buefy" />
+</a>
+
+<a href="https://github.com/Ecdcaeb/JavaOcterEditor ">
+  <img align="center" src="https://github-readme-stats.vercel.app/api/pin/?username=ecdcaeb&repo=JavaOcterEditor&theme=buefy" />
+</a>
+
